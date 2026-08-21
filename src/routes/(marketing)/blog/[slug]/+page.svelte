@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
-	import { Calendar, User, Tag, Share2, ArrowLeft, Star, Twitter, Linkedin } from '@lucide/svelte';
+	import { Calendar, User, Tag, Share2, ArrowLeft, Star } from '@lucide/svelte';
+	import XIcon from '$lib/components/icons/XIcon.svelte';
+	import LinkedInIcon from '$lib/components/icons/LinkedInIcon.svelte';
 
 	let { data } = $props();
 
@@ -77,7 +79,7 @@
 						title="Share on Twitter"
 						aria-label="Share this article on Twitter"
 					>
-						<Twitter class="size-4" fill="currentColor" aria-hidden="true" />
+						<XIcon class="size-4" />
 					</a>
 					<a
 						href="https://www.linkedin.com/sharing/share-offsite/?url={encodeURIComponent(
@@ -89,7 +91,7 @@
 						title="Share on LinkedIn"
 						aria-label="Share this article on LinkedIn"
 					>
-						<Linkedin class="size-4" fill="currentColor" aria-hidden="true" />
+						<LinkedInIcon class="size-4" />
 					</a>
 					<a
 						href="https://bsky.app/intent/compose?text={encodeURIComponent(
@@ -163,7 +165,7 @@
 					class="btn btn-sm preset-outlined-surface-200-800"
 					aria-label="Share this article on Twitter"
 				>
-					<Twitter class="size-4" aria-hidden="true" />
+					<XIcon class="size-4" />
 					<span>Twitter</span>
 				</a>
 				<a
@@ -175,7 +177,7 @@
 					class="btn btn-sm preset-outlined-surface-200-800"
 					aria-label="Share this article on LinkedIn"
 				>
-					<Linkedin class="size-4" aria-hidden="true" />
+					<LinkedInIcon class="size-4" />
 					<span>LinkedIn</span>
 				</a>
 			</div>

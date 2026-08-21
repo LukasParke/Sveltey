@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
-	import { Modal, Toaster } from '@skeletonlabs/skeleton-svelte';
 	import { MetaTags, deepMerge } from 'svelte-meta-tags';
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { toaster } from '$lib';
+	import Toaster from '$lib/components/Toaster.svelte';
 
 	import Footer from '$lib/components/Footer.svelte';
 	import Header from '$lib/components/Header.svelte';
@@ -40,9 +39,8 @@
 <!-- Meta Tags -->
 <MetaTags {...metaTags} />
 
-<!-- Skeleton Toasts and Modals -->
-<Toaster {toaster}></Toaster>
-<Modal />
+<!-- Toasts -->
+<Toaster />
 
 <!-- Header -->
 <Header {data} />

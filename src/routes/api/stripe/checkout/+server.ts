@@ -30,13 +30,12 @@ export const POST: RequestHandler = async ({ request, url, locals }) => {
 	}
 
 	// Reuse the Stripe customer across sessions; create one lazily otherwise.
-	let customerId: string | null = null;
 	const { data: existingRow } = await locals.supabase
 		.from('subscriptions')
 		.select('stripe_customer_id')
 		.eq('user_id', user.id)
 		.maybeSingle();
-	customerId = existingRow?.stripe_customer_id ?? null;
+	let customerId = existingRow?.stripe_customer_id ?? null;
 	if (!customerId) {
 		const customer = await stripe.customers.create({
 			email: user.email,

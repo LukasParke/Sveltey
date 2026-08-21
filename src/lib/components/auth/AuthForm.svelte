@@ -6,17 +6,17 @@
 	import { describeAuthError, extractAuthErrorParams, safeRedirectPath } from '$lib/auth/helpers';
 	import {
 		AlertTriangle,
-		Chrome,
 		Eye,
 		EyeOff,
-		Github,
 		Lock,
 		LogIn,
 		Mail,
 		MessageCircle,
-		Twitter,
 		UserPlus
 	} from '@lucide/svelte';
+	import GoogleIcon from '$lib/components/icons/GoogleIcon.svelte';
+	import XIcon from '$lib/components/icons/XIcon.svelte';
+	import GitHubIcon from '$lib/components/icons/GitHubIcon.svelte';
 
 	interface Props {
 		mode: 'login' | 'register';
@@ -51,7 +51,7 @@
 		{
 			name: 'GitHub',
 			provider: 'github',
-			icon: Github,
+			icon: GitHubIcon,
 			color: 'bg-[#333] hover:bg-[#555] text-white',
 			description: isLogin ? 'Continue with GitHub' : 'Sign up with GitHub',
 			enabled: true
@@ -59,7 +59,7 @@
 		{
 			name: 'Google',
 			provider: 'google',
-			icon: Chrome,
+			icon: GoogleIcon,
 			color: 'bg-surface-100-800 text-surface-600-400 cursor-not-allowed opacity-60',
 			description: 'Continue with Google',
 			enabled: false
@@ -75,7 +75,7 @@
 		{
 			name: 'Twitter',
 			provider: 'twitter',
-			icon: Twitter,
+			icon: XIcon,
 			color: 'bg-surface-100-800 text-surface-600-400 cursor-not-allowed opacity-60',
 			description: 'Continue with Twitter',
 			enabled: false

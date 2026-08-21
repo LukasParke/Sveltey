@@ -15,37 +15,37 @@
 		form && 'fieldErrors' in form ? (form.fieldErrors as Record<string, string>) : {}
 	);
 
-	$effect(() => {
-		if (!form) return;
-		if ('error' in form && form.error) {
-			toaster.create({ type: 'error', title: 'Message not sent', description: form.error });
+	function announceResult(result: { type: string; data?: Record<string, unknown> }): void {
+		if (result.type === 'failure') {
+			const message =
+				result.data && typeof result.data.error === 'string' ? result.data.error : undefined;
+			toaster.create({
+				type: 'error',
+				title: 'Message not sent',
+				description: message ?? 'Please try again.'
+			});
+			return;
 		}
-		if ('success' in form && form.success) {
-			if ('devMode' in form && form.devMode) {
-				toaster.create({
-					type: 'info',
-					title: 'Message received (dev mode)',
-					description:
-						'RESEND_API_KEY is not configured, so your message was logged to the server console instead of emailed.'
-				});
-			} else {
-				toaster.create({
-					type: 'success',
-					title: 'Message sent!',
-					description: "Thank you for contacting us. We'll get back to you soon."
-				});
-			}
-			website = '';
+		const data = (result.data ?? {}) as { success?: boolean; devMode?: boolean };
+		if (data.devMode) {
+			toaster.create({
+				type: 'info',
+				title: 'Message received (dev mode)',
+				description:
+					'RESEND_API_KEY is not configured, so your message was logged to the server console instead of emailed.'
+			});
+		} else {
+			toaster.create({
+				type: 'success',
+				title: 'Message sent!',
+				description: "Thank you for contacting us. We'll get back to you soon."
+			});
 		}
-	});
+	}
 
-	function handleFinish() {
-		submitting = false;
-		if (form && 'success' in form && form.success) {
-			// Clear the form after a successful submit.
-			const formEl = document.getElementById('contact-form') as HTMLFormElement | null;
-			formEl?.reset();
-		}
+	function resetContactForm(): void {
+		const formEl = document.getElementById('contact-form');
+		if (formEl instanceof HTMLFormElement) formEl.reset();
 	}
 </script>
 
@@ -134,9 +134,16 @@
 							action="?/send"
 							use:enhance={() => {
 								submitting = true;
-								return async ({ update }) => {
+								return async ({ result, update }) => {
 									await update();
-									handleFinish();
+									if (result.type === 'success' || result.type === 'failure') {
+										announceResult(result);
+									}
+									submitting = false;
+									if (result.type === 'success') {
+										// Clear the form after a successful submit.
+										resetContactForm();
+									}
 								};
 							}}
 							class="space-y-6"
@@ -203,8 +210,7 @@
 									rows="6"
 									required
 									maxlength="5000"
-									disabled={submitting}
-								></textarea>
+									disabled={submitting}></textarea>
 								{#if fieldErrors.message}
 									<p class="text-error-500 text-xs">{fieldErrors.message}</p>
 								{/if}

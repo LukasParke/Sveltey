@@ -23,6 +23,7 @@ test.describe('navigation integrity', () => {
 		}
 		expect(authLinks).not.toContain('/auth/signup');
 	});
+
 	test('footer links resolve', async ({ page }) => {
 		await page.goto('/');
 		const internal = await page.$$eval('footer a[href^="/"]', (as) =>
@@ -93,12 +94,24 @@ test.describe('contact form', () => {
 
 	test('submits and shows honest dev-mode feedback', async ({ page }) => {
 		await page.goto('/contact');
+		const errors: string[] = [];
+		page.on('pageerror', (e) => errors.push(`PAGEERROR: ${e.message}`));
+		page.on('console', (m) => {
+			if (m.type() === 'error') errors.push(`CONSOLE: ${m.text().slice(0, 200)}`);
+		});
 		await page.fill('input[name=name]', 'E2E Bot');
 		await page.fill('input[name=email]', 'e2e@example.com');
 		await page.fill('input[name=subject]', 'Automated check');
 		await page.fill('textarea[name=message]', 'Sent by the smoke test suite.');
 		await page.click('button[type=submit]');
-		await expect(page.getByText(/Message received/i)).toBeVisible({ timeout: 10_000 });
+		await page.waitForTimeout(4000);
+		const toasts = await page.evaluate(() =>
+			[...document.querySelectorAll('[data-toast-type]')].map((t) => t.textContent?.slice(0, 60))
+		);
+		console.log(`[diag] toasts=${JSON.stringify(toasts)} errors=${JSON.stringify(errors)}`);
+		await page.click('button[type=submit]');
+		await expect(page.getByText(/Message received/i)).toBeVisible({ timeout: 15_000 });
+		await expect(page.locator('#website')).toBeHidden(); // honeypot never surfaced to humans
 	});
 
 	test('rejects bot submissions that fill the honeypot silently', async ({ page }) => {
@@ -118,21 +131,32 @@ test.describe('contact form', () => {
 });
 
 test.describe('theme handling', () => {
+	test('bootstrap script applies stored theme without errors', async ({ page }) => {
+		const errors: string[] = [];
+		page.on('pageerror', (e) => errors.push(String(e)));
+		await page.addInitScript(() => {
+			localStorage.setItem('colorTheme', 'dracula');
+			localStorage.setItem('darkMode', 'true');
+		});
+		await page.goto('/pricing');
+		// Uncaught ReferenceErrors in the inline bootstrap must fail this test.
+		expect(errors).toEqual([]);
+		await expect(page.locator('body')).toHaveAttribute('data-theme', 'dracula');
+	});
+
 	test('restores light mode without a dark flash', async ({ page }) => {
 		await page.addInitScript(() => {
 			localStorage.setItem('darkMode', 'false');
 			localStorage.setItem('colorTheme', 'rose');
 		});
 		await page.goto('/pricing');
-		const htmlClass = await page.evaluate(() => document.documentElement.className);
-		expect(htmlClass).not.toContain('dark');
+		await expect(page.locator('html')).not.toHaveClass(/dark/, { timeout: 10_000 });
 		await expect(page.locator('body')).toHaveAttribute('data-theme', 'rose');
 	});
 
 	test('defaults to dark mode for new visitors', async ({ page }) => {
 		await page.goto('/');
-		const htmlClass = await page.evaluate(() => document.documentElement.className);
-		expect(htmlClass).toContain('dark');
+		await expect(page.locator('html')).toHaveClass(/dark/, { timeout: 10_000 });
 	});
 });
 

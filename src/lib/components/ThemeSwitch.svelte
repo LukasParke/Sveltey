@@ -4,12 +4,13 @@
 	import { Check, ChevronDown, Moon, Palette, Sun } from '@lucide/svelte';
 	import { clickoutside } from '@svelte-put/clickoutside';
 
-	// Available color themes
+	// Keep in sync with the theme imports in src/app.css
 	const colorThemes = [
 		{ value: 'catppuccin', label: 'Catppuccin' },
 		{ value: 'cerberus', label: 'Cerberus' },
 		{ value: 'concord', label: 'Concord' },
 		{ value: 'crimson', label: 'Crimson' },
+		{ value: 'dracula', label: 'Dracula' },
 		{ value: 'fennec', label: 'Fennec' },
 		{ value: 'hamlindigo', label: 'Hamlindigo' },
 		{ value: 'legacy', label: 'Legacy' },
@@ -22,6 +23,7 @@
 		{ value: 'reign', label: 'Reign' },
 		{ value: 'rocket', label: 'Rocket' },
 		{ value: 'rose', label: 'Rose' },
+		{ value: 'rosepine', label: 'Rosé Pine' },
 		{ value: 'sahara', label: 'Sahara' },
 		{ value: 'seafoam', label: 'Seafoam' },
 		{ value: 'terminus', label: 'Terminus' },
@@ -33,6 +35,8 @@
 	let currentColorTheme = $state('legacy');
 	let isDarkMode = $state(true);
 	let showDropdown = $state(false);
+
+	// Load theme from localStorage on mount (app.html already applied it pre-hydration)
 	onMount(() => {
 		const savedColorTheme = localStorage.getItem('colorTheme') || 'legacy';
 		const savedDarkMode = localStorage.getItem('darkMode') !== 'false'; // default to true
@@ -76,6 +80,7 @@
 	}
 </script>
 
+<!-- Light/Dark Mode Toggle -->
 <button
 	onclick={toggleDarkMode}
 	class="btn btn-sm items-center"

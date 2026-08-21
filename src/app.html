@@ -11,6 +11,7 @@
 			const defaultDarkMode = true;
 
 			(function () {
+				const colorTheme = localStorage.getItem('colorTheme') || defaultTheme;
 				const storedDarkMode = localStorage.getItem('darkMode');
 				const darkMode = storedDarkMode === null ? true : storedDarkMode !== 'false';
 

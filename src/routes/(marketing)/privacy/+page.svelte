@@ -175,8 +175,7 @@
 						• <strong>Legal Requirements:</strong> When required by law or to protect our rights
 					</li>
 					<li>
-						• <strong>Business Transfers:</strong> In the event of a merger, acquisition, or sale of
-						assets
+						• <strong>Business Transfers:</strong> In the event of a merger, acquisition, or sale of assets
 					</li>
 					<li>
 						• <strong>Consent:</strong> When you explicitly consent to sharing your information

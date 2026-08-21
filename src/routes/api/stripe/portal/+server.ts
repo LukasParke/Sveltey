@@ -17,13 +17,12 @@ export const POST: RequestHandler = async ({ url, locals }) => {
 		redirect(303, '/app/dashboard/billing?error=not_configured');
 	}
 
-	let customerId: string | null = null;
 	const { data: existingRow } = await locals.supabase
 		.from('subscriptions')
 		.select('stripe_customer_id')
 		.eq('user_id', user.id)
 		.maybeSingle();
-	customerId = existingRow?.stripe_customer_id ?? null;
+	let customerId = existingRow?.stripe_customer_id ?? null;
 	if (!customerId) {
 		const customer = await stripe.customers.create({
 			email: user.email,

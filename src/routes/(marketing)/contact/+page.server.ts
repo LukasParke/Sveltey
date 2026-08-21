@@ -1,3 +1,4 @@
+import { dev } from '$app/environment';
 import { fail } from '@sveltejs/kit';
 import { Resend } from 'resend';
 import { env } from '$env/dynamic/private';
@@ -12,6 +13,8 @@ const MAX_PER_WINDOW = 5;
 const submissions = new Map<string, number[]>();
 
 function isRateLimited(key: string): boolean {
+	// The limiter protects production inboxes; local dev and e2e runs stay open.
+	if (dev) return false;
 	const now = Date.now();
 	const hits = (submissions.get(key) ?? []).filter((t) => now - t < WINDOW_MS);
 	if (hits.length >= MAX_PER_WINDOW) {

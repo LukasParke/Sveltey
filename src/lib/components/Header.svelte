@@ -11,11 +11,15 @@
 		LogOut,
 		User
 	} from '@lucide/svelte';
-	import { Avatar } from '@skeletonlabs/skeleton-svelte';
 
 	let { data } = $props();
 
 	let { session } = $derived(data);
+
+	const avatarUrl = $derived(session?.user?.user_metadata?.avatar_url as string | undefined);
+	const avatarName = $derived(
+		String(session?.user?.user_metadata?.full_name || session?.user?.email || 'User')
+	);
 
 	// Helper function to get navigation link classes
 	function getNavClasses(path: string): string {
@@ -73,11 +77,18 @@
 				{#if session}
 					<!-- User Profile Section -->
 					<div class="border-surface-300-600 flex items-center gap-3 border-l pl-3">
-						<Avatar
-							size="size-8"
-							src={session.user.user_metadata.avatar_url}
-							name={session.user.user_metadata.full_name || session.user.email}
-						/>
+						<span class="flex size-8 items-center justify-center overflow-hidden rounded-full">
+							{#if avatarUrl}
+								<img class="size-8 rounded-full object-cover" src={avatarUrl} alt={avatarName} />
+							{:else}
+								<span
+									class="bg-primary-500 text-on-primary-500 flex size-8 items-center justify-center rounded-full font-semibold"
+									aria-hidden="true"
+								>
+									{avatarName.charAt(0).toUpperCase()}
+								</span>
+							{/if}
+						</span>
 						<div class="hidden md:block">
 							<p class="text-sm font-medium">
 								{session.user.user_metadata.full_name || session.user.email?.split('@')[0]}
