@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type Stripe from 'stripe';
 import type { RequestHandler } from './$types';
+import { env } from '$env/dynamic/private';
 import { getSupabaseAdmin, type SubscriptionRow } from '$lib/server/supabase-admin';
 import { getPriceIdForPlan, getStripe } from '$lib/server/stripe';
 
@@ -16,7 +17,7 @@ import { getPriceIdForPlan, getStripe } from '$lib/server/stripe';
  */
 export const POST: RequestHandler = async ({ request }) => {
 	const stripe = getStripe();
-	const secret = process.env.STRIPE_WEBHOOK_SECRET;
+	const secret = env.STRIPE_WEBHOOK_SECRET;
 	if (!stripe || !secret) {
 		return json({ error: 'Stripe webhooks are not configured' }, { status: 503 });
 	}

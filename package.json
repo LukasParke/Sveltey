@@ -61,5 +61,13 @@
 	"dependencies": {
 		"@vercel/speed-insights": "^1.2.0",
 		"stripe": "^22.5.0"
+	},
+	"overrides": {
+		"@sveltejs/kit": {
+			"cookie": "^0.7.2"
+		},
+		"eslint": {
+			"brace-expansion": "^1.1.18"
+		}
 	}
 }

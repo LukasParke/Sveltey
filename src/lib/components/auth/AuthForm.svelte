@@ -24,7 +24,7 @@
 
 	let { mode }: Props = $props();
 
-	const isLogin = mode === 'login';
+	const isLogin = $derived(mode === 'login');
 
 	let email = $state('');
 	let password = $state('');
@@ -47,7 +47,7 @@
 
 	// OAuth providers: enable more by configuring them in your Supabase dashboard
 	// (Authentication > Providers), then flipping `enabled` here.
-	const oauthProviders = [
+	const oauthProviders = $derived([
 		{
 			name: 'GitHub',
 			provider: 'github',
@@ -80,7 +80,7 @@
 			description: 'Continue with Twitter',
 			enabled: false
 		}
-	];
+	]);
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();

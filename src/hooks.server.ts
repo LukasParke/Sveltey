@@ -3,6 +3,7 @@ import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import type { CookieMethodsServer } from '@supabase/ssr';
 
 const supabase: Handle = async ({ event, resolve }) => {
 	/**
@@ -13,17 +14,19 @@ const supabase: Handle = async ({ event, resolve }) => {
 	 * 2. Automatically refresh expired tokens
 	 * 3. Handle server-side authentication
 	 */
-	event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-		cookies: {
-			getAll() {
-				return event.cookies.getAll();
-			},
-			setAll(cookiesToSet) {
-				cookiesToSet.forEach(({ name, value, options }) => {
-					event.cookies.set(name, value, { ...options, path: '/' });
-				});
-			}
+	const cookies: CookieMethodsServer = {
+		getAll() {
+			return event.cookies.getAll();
+		},
+		setAll(cookiesToSet) {
+			cookiesToSet.forEach(({ name, value, options }) => {
+				event.cookies.set(name, value, { ...options, path: '/' });
+			});
 		}
+	};
+
+	event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		cookies
 	});
 
 	/**
