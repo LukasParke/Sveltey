@@ -27,6 +27,7 @@
 						>Pricing</a
 					>
 					<a href="/blog" class="block opacity-75 transition-opacity hover:opacity-100">Blog</a>
+					<a href="/docs" class="block opacity-75 transition-opacity hover:opacity-100">Docs</a>
 					<a href="/app/dashboard" class="block opacity-75 transition-opacity hover:opacity-100"
 						>Dashboard</a
 					>
@@ -65,7 +66,7 @@
 
 		<!-- Footer Bottom -->
 		<div
-			class="border-surface-300-600-token mt-8 flex flex-col items-center justify-between border-t pt-8 md:flex-row"
+			class="border-surface-300-700-token mt-8 flex flex-col items-center justify-between border-t pt-8 md:flex-row"
 		>
 			<p class="text-sm opacity-50">© {year} Sveltey. All rights reserved.</p>
 			<div class="mt-4 flex flex-wrap items-center justify-center gap-4 md:mt-0">

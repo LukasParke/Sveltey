@@ -112,6 +112,7 @@
 				TypeScript, ESLint, Prettier, and comprehensive documentation. Built by developers, for
 				developers with love and attention to detail.
 			</p>
+			<a href="/docs" class="anchor" aria-label="Read the Sveltey documentation">Read the docs →</a>
 		</div>
 	</section>
 

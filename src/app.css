@@ -39,3 +39,28 @@ div.prose a {
 a.disabled {
 	@apply pointer-events-none opacity-50;
 }
+
+/* Docs: shiki code blocks (mdsvex highlight) */
+.prose pre {
+	@apply rounded-xl p-4 text-sm shadow-inner;
+	overflow-x: auto;
+}
+
+.prose pre code {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	background: transparent;
+	padding: 0;
+}
+
+/* Docs tables (frontmatter references etc.) */
+.prose table {
+	@apply w-full text-left text-sm;
+}
+
+.prose th {
+	@apply border-surface-300-700 border-b pb-2 font-semibold;
+}
+
+.prose td {
+	@apply border-surface-200-800 border-b py-2 align-top;
+}

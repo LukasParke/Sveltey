@@ -168,3 +168,38 @@ test.describe('blog', () => {
 		await expect(page.locator('article')).toBeVisible();
 	});
 });
+
+test.describe('documentation', () => {
+	test('landing lists all sections', async ({ page }) => {
+		await page.goto('/docs');
+		for (const section of ['Getting Started', 'Authentication', 'Payments', 'Theming']) {
+			await expect(page.getByRole('heading', { name: section })).toBeVisible();
+		}
+		const cards = await page.$$eval('a[href^="/docs/"]', (as) => as.length);
+		expect(cards).toBeGreaterThanOrEqual(16);
+	});
+
+	test('doc page renders content, TOC, and code highlighting', async ({ page }) => {
+		await page.goto('/docs/installation');
+		await expect(page.getByRole('heading', { name: 'Installation', level: 1 })).toBeVisible();
+		await expect(page.locator('nav[aria-label="On this page"] a')).toHaveCount(7);
+		await expect(page.locator('article pre').first()).toBeVisible();
+		await expect(page.locator('nav[aria-label="Breadcrumb"]')).toContainText('Getting Started');
+		await expect(page.locator('nav[aria-label="Documentation"] a[aria-current="page"]')).toHaveText(
+			'Installation'
+		);
+	});
+
+	test('prev/next navigation walks pages in order', async ({ page }) => {
+		await page.goto('/docs/installation');
+		await page.click('a:has-text("Project Structure")');
+		await expect(page).toHaveURL(/\/docs\/project-structure$/);
+		await expect(page.getByRole('heading', { name: 'Top level' })).toBeVisible();
+		await expect(page.locator('nav[aria-label="Breadcrumb"]')).toContainText('Getting Started');
+	});
+
+	test('unknown doc slug renders 404 error page', async ({ page }) => {
+		const response = await page.goto('/docs/not-a-real-page');
+		expect(response?.status()).toBe(404);
+	});
+});

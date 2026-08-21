@@ -60,7 +60,7 @@
 			name: 'Google',
 			provider: 'google',
 			icon: GoogleIcon,
-			color: 'bg-surface-100-800 text-surface-600-400 cursor-not-allowed opacity-60',
+			color: 'bg-surface-100-900 text-surface-600-400 cursor-not-allowed opacity-60',
 			description: 'Continue with Google',
 			enabled: false
 		},
@@ -68,7 +68,7 @@
 			name: 'Discord',
 			provider: 'discord',
 			icon: MessageCircle,
-			color: 'bg-surface-100-800 text-surface-600-400 cursor-not-allowed opacity-60',
+			color: 'bg-surface-100-900 text-surface-600-400 cursor-not-allowed opacity-60',
 			description: 'Continue with Discord',
 			enabled: false
 		},
@@ -76,7 +76,7 @@
 			name: 'Twitter',
 			provider: 'twitter',
 			icon: XIcon,
-			color: 'bg-surface-100-800 text-surface-600-400 cursor-not-allowed opacity-60',
+			color: 'bg-surface-100-900 text-surface-600-400 cursor-not-allowed opacity-60',
 			description: 'Continue with Twitter',
 			enabled: false
 		}

@@ -9,7 +9,8 @@ import rehypeSlug from 'rehype-slug';
 const mdsvexOptions = {
 	extensions: ['.md'],
 	remarkPlugins: [remarkUnwrapImages, remarkToc, remarkAbbr],
-	rehypePlugins: [rehypeSlug]
+	rehypePlugins: [rehypeSlug],
+	highlight: { theme: 'one-dark-pro' }
 };
 
 /** @type {import('@sveltejs/kit').Config} */

@@ -28,7 +28,7 @@
 </script>
 
 <header
-	class="bg-surface-50-950-token border-surface-200-700-token sticky top-0 z-50 border-b backdrop-blur-2xl"
+	class="bg-surface-50-950-token border-surface-200-800-token sticky top-0 z-50 border-b backdrop-blur-2xl"
 >
 	<nav class="container mx-auto px-2 py-2 md:px-6 md:py-4">
 		<div class="flex items-center justify-between">
@@ -47,16 +47,15 @@
 						<span>Home</span>
 					</a>
 
-					<a href="/pricing" class={getNavClasses('/pricing')} aria-label="View pricing plans">
-						<DollarSign class="size-4" aria-hidden="true" />
-						<span>Pricing</span>
-					</a>
-
 					<a href="/blog" class={getNavClasses('/blog')} aria-label="Read our blog">
 						<BookOpen class="size-4" aria-hidden="true" />
 						<span>Blog</span>
 					</a>
 
+					<a href="/docs" class={getNavClasses('/docs')} aria-label="Browse documentation">
+						<BookOpen class="size-4" aria-hidden="true" />
+						<span>Docs</span>
+					</a>
 					{#if session}
 						<a
 							href="/app/dashboard"
@@ -76,7 +75,7 @@
 
 				{#if session}
 					<!-- User Profile Section -->
-					<div class="border-surface-300-600 flex items-center gap-3 border-l pl-3">
+					<div class="border-surface-300-700 flex items-center gap-3 border-l pl-3">
 						<span class="flex size-8 items-center justify-center overflow-hidden rounded-full">
 							{#if avatarUrl}
 								<img class="size-8 rounded-full object-cover" src={avatarUrl} alt={avatarName} />
@@ -135,6 +134,11 @@
 				<a href="/blog" class={getNavClasses('/blog')} aria-label="Read our blog">
 					<BookOpen class="size-4" aria-hidden="true" />
 					Blog
+				</a>
+
+				<a href="/docs" class={getNavClasses('/docs')} aria-label="Browse documentation">
+					<BookOpen class="size-4" aria-hidden="true" />
+					Docs
 				</a>
 				<div class="flex justify-center gap-2">
 					{#if session}
