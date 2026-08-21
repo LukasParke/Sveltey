@@ -1,6 +1,5 @@
 <script lang="ts">
 	let { restProps } = $props();
-
 </script>
 
 <svg

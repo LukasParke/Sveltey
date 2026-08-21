@@ -6,7 +6,7 @@ import type { MetaTagsProps } from 'svelte-meta-tags';
 export const load = async ({ params, url }) => {
 	// Get the full post with content
 	const post = await getPostBySlug(params.slug);
-	
+
 	if (!post) {
 		throw error(404, 'Blog post not found');
 	}
@@ -16,7 +16,7 @@ export const load = async ({ params, url }) => {
 		title: post.title,
 		description: post.excerpt,
 		canonical: new URL(`/blog/${params.slug}`, url.origin).href,
-		
+
 		openGraph: {
 			type: 'article',
 			url: new URL(`/blog/${params.slug}`, url.origin).href,
@@ -29,12 +29,12 @@ export const load = async ({ params, url }) => {
 				tags: ['SvelteKit', 'SaaS', 'Web Development', 'Tutorial']
 			}
 		},
-		
+
 		twitter: {
 			title: post.title,
 			description: post.excerpt
 		},
-		
+
 		additionalMetaTags: [
 			{
 				name: 'article:published_time',
@@ -46,10 +46,10 @@ export const load = async ({ params, url }) => {
 			}
 		]
 	}) satisfies MetaTagsProps;
-	
-	return { 
+
+	return {
 		post,
-		slug: params.slug,  // Pass the slug so we can load the component client-side
+		slug: params.slug, // Pass the slug so we can load the component client-side
 		pageMetaTags
 	};
 };

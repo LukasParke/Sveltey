@@ -32,20 +32,14 @@
 
 	let currentColorTheme = $state('legacy');
 	let isDarkMode = $state(true);
-	let mounted = $state(false);
 	let showDropdown = $state(false);
-
-	// Load theme from localStorage on mount
 	onMount(() => {
-		if (browser) {
-			const savedColorTheme = localStorage.getItem('colorTheme') || 'legacy';
-			const savedDarkMode = localStorage.getItem('darkMode') !== 'false'; // default to true
+		const savedColorTheme = localStorage.getItem('colorTheme') || 'legacy';
+		const savedDarkMode = localStorage.getItem('darkMode') !== 'false'; // default to true
 
-			currentColorTheme = savedColorTheme;
-			isDarkMode = savedDarkMode;
-			applyTheme(savedColorTheme, savedDarkMode);
-			mounted = true;
-		}
+		currentColorTheme = savedColorTheme;
+		isDarkMode = savedDarkMode;
+		applyTheme(savedColorTheme, savedDarkMode);
 	});
 
 	function applyTheme(colorTheme: string, darkMode: boolean) {
@@ -80,28 +74,8 @@
 			applyTheme(theme, isDarkMode);
 		}
 	}
-
-	// Set default theme immediately if not set
-	$effect(() => {
-		if (browser && !mounted) {
-			const savedColorTheme = localStorage.getItem('colorTheme');
-			const savedDarkMode = localStorage.getItem('darkMode');
-
-			if (!savedColorTheme) {
-				localStorage.setItem('colorTheme', 'legacy');
-			}
-			if (!savedDarkMode) {
-				localStorage.setItem('darkMode', 'true');
-			}
-
-			if (!savedColorTheme || !savedDarkMode) {
-				applyTheme(savedColorTheme || 'legacy', savedDarkMode !== 'false');
-			}
-		}
-	});
 </script>
 
-<!-- Light/Dark Mode Toggle -->
 <button
 	onclick={toggleDarkMode}
 	class="btn btn-sm items-center"
@@ -116,8 +90,7 @@
 </button>
 
 <!-- Color Theme Selector -->
-<div class="relative my-auto" use:clickoutside
-onclickoutside={() => (showDropdown = false)}>
+<div class="relative my-auto" use:clickoutside onclickoutside={() => (showDropdown = false)}>
 	<button
 		onclick={() => (showDropdown = !showDropdown)}
 		class="btn btn-sm flex h-8 items-center"
@@ -138,7 +111,7 @@ onclickoutside={() => (showDropdown = false)}>
 			class="card preset-outlined-primary-500 bg-surface-50-950 rounded-container absolute right-0 z-50 mt-2 h-128 w-24 overflow-hidden shadow-lg sm:w-48 md:left-0"
 		>
 			<div class="flex h-full flex-col gap-2 overflow-y-scroll">
-				{#each colorThemes as theme}
+				{#each colorThemes as theme (theme.value)}
 					<button
 						onclick={() => selectColorTheme(theme.value)}
 						class="btn btn-sm flex w-full items-center justify-between px-4 py-2 transition-colors"

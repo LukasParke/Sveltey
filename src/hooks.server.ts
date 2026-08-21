@@ -7,7 +7,7 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 const supabase: Handle = async ({ event, resolve }) => {
 	/**
 	 * Creates a Supabase client specific to this server request.
-	 * 
+	 *
 	 * The Supabase client is configured to:
 	 * 1. Use cookies for session persistence
 	 * 2. Automatically refresh expired tokens
@@ -68,18 +68,26 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	event.locals.session = session;
 	event.locals.user = user;
 
+	const { pathname } = event.url;
 
 	// Protect routes that require authentication
-	if (!event.locals.session && event.url.pathname.startsWith('/app')) {
-		redirect(303, '/auth')
+	if (!session && pathname.startsWith('/app')) {
+		redirect(303, '/auth/login');
 	}
 
-	// Redirect authenticated users away from auth pages
-	if (event.locals.session && event.url.pathname === '/auth') {
-		redirect(303, '/app/dashboard')
-	  }
+	/**
+	 * Redirect authenticated users away from auth pages. Flows that legitimately
+	 * require (or just established) a session are exempt:
+	 * - /auth/logout: POST action signs the user out
+	 * - /auth/callback: exchanges PKCE/OAuth codes for a session
+	 * - /auth/update-password: password recovery requires the session created by the callback
+	 */
+	const authExempt = ['/auth/logout', '/auth/callback', '/auth/update-password'];
+	if (session && pathname.startsWith('/auth') && !authExempt.some((p) => pathname.startsWith(p))) {
+		redirect(303, '/app/dashboard');
+	}
 
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(supabase, authGuard); 
+export const handle: Handle = sequence(supabase, authGuard);

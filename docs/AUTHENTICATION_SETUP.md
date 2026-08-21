@@ -1,11 +1,14 @@
 # SvelteKit Supabase Authentication Setup
 
-This project uses Supabase for authentication with full server-side rendering (SSR) support through SvelteKit hooks.
+This project uses Supabase Auth with full SSR support through SvelteKit hooks,
+PKCE-based OAuth/email links, and a single server-side session validation per
+request.
 
 ## Features
 
-- ✅ Email/Password authentication
-- ✅ GitHub OAuth integration  
+- ✅ Email/Password authentication (sign-up with email confirmation, sign-in)
+- ✅ GitHub OAuth (PKCE flow) — more providers are a config flip away
+- ✅ Password reset (request link → set new password)
 - ✅ Server-side authentication with `hooks.server.ts`
 - ✅ Protected routes with automatic redirects
 - ✅ Session management across client and server
@@ -15,7 +18,7 @@ This project uses Supabase for authentication with full server-side rendering (S
 
 ### 1. Environment Variables
 
-Create a `.env.local` file in your project root:
+Create a `.env` file in your project root:
 
 ```bash
 PUBLIC_SUPABASE_URL=your_supabase_project_url
@@ -26,166 +29,85 @@ Get these values from your Supabase project dashboard under Settings > API.
 
 ### 2. Supabase Configuration
 
-#### Enable GitHub OAuth Provider
+#### Enable the GitHub OAuth provider
 
-1. Go to your Supabase project dashboard
-2. Navigate to **Authentication > Providers**
-3. Enable the **GitHub** provider
-4. Add your GitHub OAuth credentials:
-   - **Client ID**: From your GitHub OAuth app
-   - **Client Secret**: From your GitHub OAuth app
+1. Supabase dashboard → **Authentication > Providers**
+2. Enable **GitHub** and add your OAuth app credentials (Client ID + Secret)
 
-#### GitHub OAuth App Setup
+GitHub OAuth app setup: <https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app>
 
-1. Go to GitHub Settings > Developer settings > OAuth Apps
-2. Click "New OAuth App"
-3. Fill in the details:
-   - **Application name**: Your app name
-   - **Homepage URL**: `http://localhost:5173` (for development)
-   - **Authorization callback URL**: `https://your-project-ref.supabase.co/auth/v1/callback`
-4. Note the Client ID and Client Secret for Supabase configuration
+- **Homepage URL**: `http://localhost:5173` (development)
+- **Authorization callback URL**: `https://your-project-ref.supabase.co/auth/v1/callback`
 
-### 3. Supabase Authentication Settings
+To add Google/Discord/Twitter, enable them under Authentication > Providers,
+then flip `enabled: true` on the entry in
+`src/lib/components/auth/AuthForm.svelte`.
 
-In your Supabase project settings:
+#### Site URLs
 
-1. Go to **Authentication > Settings**
-2. Add your site URLs:
-   - **Site URL**: `http://localhost:5173` (development) / `https://yourdomain.com` (production)
-   - **Redirect URLs**: Add both your local and production URLs
+**Authentication > URL Configuration**:
+
+- **Site URL**: `http://localhost:5173` (dev) / `https://yourdomain.com` (prod)
+- **Redirect URLs**: add both origins plus `http://localhost:5173/auth/callback`
 
 ## Architecture Overview
 
-### Server-Side Authentication (`hooks.server.ts`)
+### Single validation point (`hooks.server.ts`)
 
-The authentication is handled through SvelteKit hooks:
+The `authGuard` hook validates the JWT once per request via
+`locals.safeGetSession()` (getSession + getUser). Every load function reuses
+`locals.session` / `locals.user` — no extra auth-server round trips.
 
-```typescript
-// src/hooks.server.ts
-export const handle: Handle = sequence(supabase, authGuard);
-```
+Route rules:
 
-#### Features:
-- **`supabase` hook**: Creates server-side Supabase client with cookie management
-- **`authGuard` hook**: Protects routes and handles redirects
-- **Session validation**: Validates JWTs on every request
-- **Cookie management**: Automatic token refresh and cookie handling
+| Path      | Rule                                                                                                                  |
+| --------- | --------------------------------------------------------------------------------------------------------------------- |
+| `/app/*`  | Requires a session; otherwise redirect to `/auth/login`                                                               |
+| `/auth/*` | Signed-in users are redirected to `/app/dashboard`, except: `/auth/logout`, `/auth/callback`, `/auth/update-password` |
 
-### Protected Routes
+### PKCE callback (`/auth/callback`)
 
-Routes are automatically protected based on path patterns:
+All email links and OAuth redirects land on `/auth/callback?code=...&next=...`,
+which calls `exchangeCodeForSession(code)` on the server client (cookies are
+set by the hook) and forwards to `next`. The `next` value is validated against
+open redirects (`safeRedirectPath` in `src/lib/auth/helpers.ts`).
 
-- **`/dashboard/*`**: Requires authentication, redirects to `/auth/login` if not authenticated
-- **`/auth/*`**: Redirects authenticated users to `/dashboard`
+Flows using it:
 
-### Client-Side Integration (`+layout.svelte`)
-
-The root layout handles client-side authentication state:
-
-```typescript
-// Syncs server-side session with client-side
-$effect(() => {
-    session = data.session;
-});
-
-// Handles auth state changes
-supabase.auth.onAuthStateChange((event, newSession) => {
-    if (newSession?.expires_at !== session?.expires_at) {
-        invalidateAll();
-    }
-});
-```
+- OAuth sign-in/sign-up → next defaults to `/app/dashboard`
+- Email confirmation link → back to the page that started sign-up
+- Password recovery → `/auth/update-password`
 
 ## File Structure
 
 ```
 src/
-├── hooks.server.ts              # Server-side authentication hooks
-├── app.d.ts                     # TypeScript definitions for Supabase
+├── hooks.server.ts                     # Supabase client + auth guard
 ├── lib/
-│   ├── index.ts                # Exports (toaster)
-│   └── supabaseClient.ts       # Browser Supabase client
-├── routes/
-│   ├── +layout.svelte          # Root layout with auth state
-│   ├── +layout.server.ts       # Server layout with session data
-│   ├── auth/
-│   │   ├── login/+page.svelte  # Login page with GitHub OAuth
-│   │   ├── signup/+page.svelte # Signup page with GitHub OAuth  
-│   │   └── logout/+page.server.ts # Logout action
-│   └── dashboard/
-│       ├── +layout.server.ts   # Dashboard layout (protected)
-│       └── +page.svelte        # Dashboard page
-```
-
-## Usage Examples
-
-### Login Page Features
-
-- Email/password authentication
-- GitHub OAuth login
-- Form validation and error handling
-- Loading states
-- Automatic redirect after login
-
-### Signup Page Features  
-
-- Email/password registration
-- GitHub OAuth signup
-- Email confirmation handling
-- Error handling with toast notifications
-
-### Dashboard Protection
-
-The dashboard is automatically protected and will:
-- Redirect unauthenticated users to login
-- Display user information for authenticated users
-- Handle session expiration gracefully
-
-## TypeScript Support
-
-Full TypeScript support with proper types:
-
-```typescript
-// app.d.ts
-interface Locals {
-    supabase: SupabaseClient;
-    safeGetSession(): Promise<{ session: Session | null; user: User | null }>;
-    session: Session | null;
-    user: User | null;
-}
+│   ├── auth/helpers.ts                 # Error mapping, redirect guards
+│   ├── components/auth/AuthForm.svelte # Shared login/register form
+│   └── supabase-client.ts              # Browser client (PKCE)
+└── routes/(app)/auth/
+    ├── login/+page.svelte              # Sign in (email/password + OAuth)
+    ├── register/+page.svelte           # Sign up
+    ├── reset/+page.svelte              # Request password reset email
+    ├── update-password/+page.svelte    # Set new password after recovery
+    ├── callback/+server.ts             # PKCE code exchange
+    └── logout/+page.server.ts          # POST sign-out action
 ```
 
 ## Development
 
-1. Start your development server:
-```bash
-npm run dev
-```
-
-2. Test authentication:
-   - Visit `/auth/signup` to create an account
-   - Try GitHub OAuth login
-   - Visit `/dashboard` to see protected content
-   - Test logout functionality
+1. `npm run dev`
+2. Visit `/auth/register` to create an account (email confirmation depends on
+   your Supabase "Confirm email" setting).
+3. Try GitHub OAuth on the same page.
+4. Visit `/app/dashboard` — protected content.
+5. Test password reset via "Forgot your password?" on the sign-in page.
 
 ## Security Features
 
-- **JWT validation**: Server-side validation of authentication tokens
-- **Automatic refresh**: Tokens are refreshed automatically
-- **Secure cookies**: HTTP-only cookies for session management  
-- **Route protection**: Server-side route guards
-- **CSRF protection**: Built into Supabase auth flow
-
-## Troubleshooting
-
-### Common Issues
-
-1. **"Cannot redirect during render"**: Usually caused by trying to redirect in a `load` function without throwing the redirect
-2. **OAuth callback errors**: Check your GitHub OAuth app callback URL matches Supabase settings
-3. **Session not persisting**: Ensure cookies are configured correctly in `hooks.server.ts`
-
-### Debug Tips
-
-- Check browser Network tab for auth requests
-- Verify Supabase project settings match your configuration
-- Test OAuth flow in incognito mode to avoid cached sessions 
+- **JWT validation**: every request validates the access token server-side.
+- **Automatic refresh**: tokens refresh through cookie-backed sessions.
+- **Open-redirect protection**: post-auth redirects accept only same-site paths.
+- **CSRF**: logout is a POST form action; SvelteKit's built-in CSRF checks apply.

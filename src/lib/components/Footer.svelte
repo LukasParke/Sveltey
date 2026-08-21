@@ -1,7 +1,6 @@
-<script>
-
+<script lang="ts">
+	const year = new Date().getFullYear();
 </script>
-
 
 <footer class="bg-surface-100-850-token border-surface-500 mt-20 border-t">
 	<div class="container mx-auto px-4 py-12 md:px-6">
@@ -28,7 +27,7 @@
 						>Pricing</a
 					>
 					<a href="/blog" class="block opacity-75 transition-opacity hover:opacity-100">Blog</a>
-					<a href="/dashboard" class="block opacity-75 transition-opacity hover:opacity-100"
+					<a href="/app/dashboard" class="block opacity-75 transition-opacity hover:opacity-100"
 						>Dashboard</a
 					>
 				</div>
@@ -45,10 +44,7 @@
 						GitHub
 					</a>
 					<a href="/contact" class="block opacity-75 transition-opacity hover:opacity-100">
-						Contact
-					</a>
-					<a href="/help" class="block opacity-75 transition-opacity hover:opacity-100">
-						Help Center
+						Contact & Help Center
 					</a>
 				</div>
 			</div>
@@ -63,9 +59,6 @@
 					<a href="/terms" class="block opacity-75 transition-opacity hover:opacity-100">
 						Terms of Service
 					</a>
-					<a href="/cookies" class="block opacity-75 transition-opacity hover:opacity-100">
-						Cookie Policy
-					</a>
 				</div>
 			</div>
 		</div>
@@ -74,15 +67,21 @@
 		<div
 			class="border-surface-300-600-token mt-8 flex flex-col items-center justify-between border-t pt-8 md:flex-row"
 		>
-			<p class="text-sm opacity-50">© 2025 Sveltey. All rights reserved.</p>
+			<p class="text-sm opacity-50">© {year} Sveltey. All rights reserved.</p>
 			<div class="mt-4 flex flex-wrap items-center justify-center gap-4 md:mt-0">
 				<span class="text-sm opacity-50">Built with</span>
 				<div class="flex items-center gap-2 text-sm opacity-75">
-					<a class="anchor" href="https://kit.svelte.dev/" target="_blank">SvelteKit</a>
+					<a class="anchor" href="https://kit.svelte.dev/" target="_blank" rel="noopener noreferrer"
+						>SvelteKit</a
+					>
 					<span>•</span>
-					<a class="anchor" href="https://supabase.com/" target="_blank">Supabase</a>
+					<a class="anchor" href="https://supabase.com/" target="_blank" rel="noopener noreferrer"
+						>Supabase</a
+					>
 					<span>•</span>
-					<a class="anchor" href="https://skeleton.dev/" target="_blank">Skeleton UI</a>
+					<a class="anchor" href="https://skeleton.dev/" target="_blank" rel="noopener noreferrer"
+						>Skeleton UI</a
+					>
 				</div>
 			</div>
 		</div>

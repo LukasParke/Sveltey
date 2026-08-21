@@ -4,7 +4,7 @@
 
 	export let color = 'pink';
 
-    // @ts-expect-error - scale is a valid fallback
+	// @ts-expect-error - scale is a valid fallback
 	const [send, receive] = crossfade({ fallback: scale });
 
 	let boingers = [
@@ -24,20 +24,19 @@
 <div class="container">
 	<div class="boingers">
 		{#each boingers.filter((v) => !v.boinged) as { val } (val)}
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<button
 				animate:flip
 				in:receive={{ key: val }}
 				out:send={{ key: val }}
 				style="background:{color};"
-				onclick={() => toggleBoing(val)}>{val}
-            </button>
+				onclick={() => toggleBoing(val)}
+				>{val}
+			</button>
 		{/each}
 	</div>
 
 	<div class="boingers">
 		{#each boingers.filter((v) => v.boinged) as { val } (val)}
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<button
 				animate:flip
 				in:receive={{ key: val }}

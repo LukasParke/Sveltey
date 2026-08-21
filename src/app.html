@@ -1,43 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="dark">
-    <head>
-        <meta charset="utf-8" />
-        <link rel="icon" href="%sveltekit.assets%/favicon.svg" />
-        <meta name="viewport" content="width=device-width" />
-        %sveltekit.head%
-        <script>
-            // Set theme immediately to prevent flashing
-            const defaultTheme = 'legacy';
-            const defaultDarkMode = true;
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		%sveltekit.head%
+		<script>
+			// Set theme immediately to prevent flashing
+			const defaultTheme = 'legacy';
+			const defaultDarkMode = true;
 
-            (function() {
-                const colorTheme = localStorage.getItem('colorTheme') || defaultTheme;
-                const darkMode = localStorage.getItem('darkMode') !== 'false' || defaultDarkMode; // default to true
-                
-                // Handle dark mode class on html element
-                if (darkMode) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-                
-                // Apply color theme to body when it's available
-                function applyColorTheme() {
-                    if (document.body) {
-                        document.body.setAttribute('data-theme', colorTheme);
-                    } else {
-                        document.addEventListener('DOMContentLoaded', function() {
-                            document.body.setAttribute('data-theme', colorTheme);
-                        });
-                    }
-                }
-                
-                applyColorTheme();
-            })();
-        </script>
-        <script defer data-domain="sveltey.dev" src="https://events.plygrnd.org/js/script.js"></script>
-    </head>
-    <body data-sveltekit-preload-data="hover" data-theme="legacy">
-        <div style="display: contents">%sveltekit.body%</div>
-    </body>
+			(function () {
+				const storedDarkMode = localStorage.getItem('darkMode');
+				const darkMode = storedDarkMode === null ? true : storedDarkMode !== 'false';
+
+				// Handle dark mode class on html element
+				if (darkMode) {
+					document.documentElement.classList.add('dark');
+				} else {
+					document.documentElement.classList.remove('dark');
+				}
+
+				// Apply color theme to body when it's available
+				function applyColorTheme() {
+					if (document.body) {
+						document.body.setAttribute('data-theme', colorTheme);
+					} else {
+						document.addEventListener('DOMContentLoaded', function () {
+							document.body.setAttribute('data-theme', colorTheme);
+						});
+					}
+				}
+
+				applyColorTheme();
+			})();
+		</script>
+		<script defer data-domain="sveltey.dev" src="https://events.plygrnd.org/js/script.js"></script>
+	</head>
+	<body data-sveltekit-preload-data="hover" data-theme="legacy">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
 </html>

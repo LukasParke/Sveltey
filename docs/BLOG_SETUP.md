@@ -8,7 +8,7 @@ This project uses a static markdown-based blog system powered by MDSvex for Svel
 - ✅ **Frontmatter Metadata**: YAML frontmatter for post metadata
 - ✅ **Featured Posts**: Mark posts as featured for special display
 - ✅ **Tags & Categories**: Organize posts with tags
-- ✅ **SEO Optimized**: Automatic meta tags and Open Graph support  
+- ✅ **SEO Optimized**: Automatic meta tags and Open Graph support
 - ✅ **Responsive Design**: Mobile-friendly blog layout
 - ✅ **Syntax Highlighting**: Code blocks with Shiki highlighting
 - ✅ **Table of Contents**: Automatic TOC generation
@@ -54,12 +54,12 @@ Start your post with YAML frontmatter:
 
 ```markdown
 ---
-title: "My Awesome Blog Post"
-slug: "my-awesome-blog-post"
-excerpt: "A compelling description of your blog post that will appear in listings and meta tags."
-publishedAt: "2024-01-30"
-author: "Your Name"
-tags: ["tutorial", "sveltekit", "web-development"]
+title: 'My Awesome Blog Post'
+slug: 'my-awesome-blog-post'
+excerpt: 'A compelling description of your blog post that will appear in listings and meta tags.'
+publishedAt: '2024-01-30'
+author: 'Your Name'
+tags: ['tutorial', 'sveltekit', 'web-development']
 featured: true
 ---
 
@@ -72,29 +72,31 @@ Your content goes here...
 
 Use standard Markdown syntax for your blog post content:
 
-```markdown
+````markdown
 ## Section Heading
 
-This is a paragraph with **bold** and *italic* text.
+This is a paragraph with **bold** and _italic_ text.
 
 ### Code Examples
 
 ```javascript
 const example = () => {
-  console.log('Hello from my blog!');
+	console.log('Hello from my blog!');
 };
 ```
+````
 
 ### Lists
 
 - Item 1
-- Item 2  
+- Item 2
 - Item 3
 
 ### Links
 
 Check out [SvelteKit](https://kit.svelte.dev) for more information.
-```
+
+````
 
 ## Frontmatter Reference
 
@@ -125,7 +127,7 @@ export interface BlogPost {
   featured: boolean;
   component?: any; // The Svelte component for rendering
 }
-```
+````
 
 ### Rendering Posts
 
@@ -134,9 +136,9 @@ Posts are rendered using `svelte:component`:
 ```svelte
 <!-- In the blog post page -->
 {#if post.component}
-  <svelte:component this={post.component} />
+	<svelte:component this={post.component} />
 {:else}
-  <p>Content not available.</p>
+	<p>Content not available.</p>
 {/if}
 ```
 
@@ -192,15 +194,15 @@ The blog uses Tailwind's typography plugin with custom styling:
 
 ```css
 .prose {
-  @apply text-surface-900-50-token max-w-none;
+	@apply text-surface-900-50-token max-w-none;
 }
 
 .prose h1 {
-  @apply text-3xl font-bold mb-6;
+	@apply mb-6 text-3xl font-bold;
 }
 
 .prose code {
-  @apply bg-surface-200 dark:bg-surface-700 px-1 py-0.5 rounded;
+	@apply bg-surface-200 dark:bg-surface-700 rounded px-1 py-0.5;
 }
 ```
 
@@ -216,31 +218,43 @@ The markdown processing is configured in `svelte.config.js`:
 
 ```javascript
 const mdsvexOptions = {
-  extensions: ['.md'],
-  layout: {
-    _: './src/lib/components/MDXLayout.svelte'
-  },
-  remarkPlugins: [remarkUnwrapImages, remarkToc, remarkAbbr],
-  rehypePlugins: [rehypeSlug],
-  highlight: {
-    highlighter: async (code, lang) => {
-      const shiki = await import('shiki');
-      const highlighter = await shiki.getHighlighter({
-        themes: ['github-dark', 'github-light'],
-        langs: ['javascript', 'typescript', 'html', 'css', 'svelte', 'bash', 'json', 'yaml', 'python', 'rust', 'go']
-      });
-      
-      const html = highlighter.codeToHtml(code, {
-        lang,
-        themes: {
-          light: 'github-light',
-          dark: 'github-dark'
-        }
-      });
-      
-      return html;
-    }
-  }
+	extensions: ['.md'],
+	layout: {
+		_: './src/lib/components/MDXLayout.svelte'
+	},
+	remarkPlugins: [remarkUnwrapImages, remarkToc, remarkAbbr],
+	rehypePlugins: [rehypeSlug],
+	highlight: {
+		highlighter: async (code, lang) => {
+			const shiki = await import('shiki');
+			const highlighter = await shiki.getHighlighter({
+				themes: ['github-dark', 'github-light'],
+				langs: [
+					'javascript',
+					'typescript',
+					'html',
+					'css',
+					'svelte',
+					'bash',
+					'json',
+					'yaml',
+					'python',
+					'rust',
+					'go'
+				]
+			});
+
+			const html = highlighter.codeToHtml(code, {
+				lang,
+				themes: {
+					light: 'github-light',
+					dark: 'github-dark'
+				}
+			});
+
+			return html;
+		}
+	}
 };
 ```
 
@@ -259,7 +273,7 @@ const mdsvexOptions = {
 Each blog post automatically generates:
 
 - Page title with post title
-- Meta description from excerpt  
+- Meta description from excerpt
 - Open Graph tags for social sharing
 - Article metadata (published date, author, tags)
 
@@ -291,6 +305,7 @@ touch src/lib/posts/my-new-post.md
 ### 2. Preview Posts
 
 Posts are automatically available at:
+
 - Blog index: `/blog`
 - Individual post: `/blog/your-post-slug`
 
@@ -329,6 +344,7 @@ const allPostFiles = import.meta.glob('/src/lib/posts/*.md');
 ### Build-Time Processing
 
 All markdown processing happens at build time, ensuring:
+
 - Fast page loads
 - SEO-friendly static HTML
 - No runtime markdown parsing overhead
@@ -354,7 +370,7 @@ If migrating from an HTML-content based blog:
 The markdown blog works with any SvelteKit deployment target:
 
 - **Static**: Pre-rendered at build time
-- **Server**: Rendered on demand  
+- **Server**: Rendered on demand
 - **Hybrid**: Mix of static and server rendering
 
 All posts are processed at build time, so they work perfectly with static deployment.
@@ -389,4 +405,4 @@ In development, check the browser console for any post loading errors. The syste
 
 ---
 
-This Svelte 5 compatible markdown blog system provides a powerful, flexible, and maintainable solution for content management while leveraging the full power of Svelte's component system! 
+This Svelte 5 compatible markdown blog system provides a powerful, flexible, and maintainable solution for content management while leveraging the full power of Svelte's component system!

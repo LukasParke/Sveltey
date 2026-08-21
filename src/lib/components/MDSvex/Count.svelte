@@ -1,12 +1,11 @@
 <script lang="ts">
-
-	let {count = 0}: {count: number} = $props();
+	let { count = 0 }: { count: number } = $props();
 </script>
 
 <span class="outer">
-	<button onclick="{() => count = count - 1}">-</button>
+	<button onclick={() => (count = count - 1)}>-</button>
 	<span class="inner">{count}</span>
-	<button onclick="{() => count = count + 1}">+</button>
+	<button onclick={() => (count = count + 1)}>+</button>
 </span>
 
 <style>
@@ -21,12 +20,12 @@
 		margin: 0 5px;
 		border-radius: 3px;
 		width: 65px;
-		box-shadow: 0 3px 15px 1px rgba(0,0,0,0.3)
-  }
+		box-shadow: 0 3px 15px 1px rgba(0, 0, 0, 0.3);
+	}
 
 	.inner {
 		margin: 0 0px;
-  }
+	}
 
 	button {
 		height: 20px;

@@ -9,7 +9,7 @@
 
 	import Footer from '$lib/components/Footer.svelte';
 	import Header from '$lib/components/Header.svelte';
-	
+
 	import 'prism-themes/themes/prism-vsc-dark-plus.css';
 	import '../app.css';
 
@@ -24,26 +24,6 @@
 
 	// Merge base meta tags with page-specific meta tags
 	let metaTags = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags || {}));
-
-	// Helper function to check if a path is active
-	function isActivePath(path: string): boolean {
-		if (path === '/') {
-			return page.url.pathname === '/';
-		}
-		return page.url.pathname.startsWith(path);
-	}
-
-	// Helper function to get navigation link classes
-	function getNavLinkClasses(path: string): string {
-		const isActive = isActivePath(path);
-		const baseClasses = 'btn flex items-center gap-2';
-
-		if (isActive) {
-			return `${baseClasses} preset-filled-primary-500 text-on-primary-500 cursor-default`;
-		}
-		return `${baseClasses} preset-ghost-surface-200-800`;
-	}
-
 
 	onMount(() => {
 		// Sync client-side session with server-side on mount

@@ -1,10 +1,10 @@
 ---
-title: "Getting Started with Our SaaS Template"
-slug: "getting-started-with-our-saas-template"
-excerpt: "Discover how our complete SvelteKit & Supabase SaaS template can accelerate your development process from idea to production in minutes."
-publishedAt: "2025-05-27"
-author: "Luke Hagar"
-tags: ["template", "sveltekit", "supabase", "saas", "startup"]
+title: 'Getting Started with Our SaaS Template'
+slug: 'getting-started-with-our-saas-template'
+excerpt: 'Discover how our complete SvelteKit & Supabase SaaS template can accelerate your development process from idea to production in minutes.'
+publishedAt: '2025-05-27'
+author: 'Luke Hagar'
+tags: ['template', 'sveltekit', 'supabase', 'saas', 'startup']
 featured: true
 ---
 
@@ -57,6 +57,7 @@ npm run dev
 ```
 
 That's it! Your SaaS application is now running locally with:
+
 - Authentication pages at `/auth/signup` and `/auth/login`
 - A protected dashboard at `/dashboard`
 - [Pricing page](/pricing) ready for customization
@@ -72,14 +73,17 @@ Our template includes a complete authentication system powered by Supabase:
 // Example: Checking user session
 import { supabase } from '$lib/supabaseClient';
 
-const { data: { session } } = await supabase.auth.getSession();
+const {
+	data: { session }
+} = await supabase.auth.getSession();
 if (session) {
-  // User is authenticated
-  console.log('Welcome,', session.user.email);
+	// User is authenticated
+	console.log('Welcome,', session.user.email);
 }
 ```
 
 The authentication system includes:
+
 - GitHub OAuth integration (easily extensible to other providers)
 - Email/password authentication
 - Password reset functionality
@@ -89,6 +93,7 @@ The authentication system includes:
 ### 🎨 Modern UI with Skeleton
 
 Built on top of Skeleton UI, our template provides:
+
 - 10+ beautiful theme options
 - Responsive design out of the box
 - Dark/light mode toggle
@@ -98,14 +103,15 @@ Built on top of Skeleton UI, our template provides:
 ```svelte
 <!-- Example: Using template components -->
 <div class="card preset-outlined-surface-200-800 p-8">
-  <h3 class="h3">Feature Card</h3>
-  <p class="opacity-75">Beautiful, consistent styling throughout.</p>
+	<h3 class="h3">Feature Card</h3>
+	<p class="opacity-75">Beautiful, consistent styling throughout.</p>
 </div>
 ```
 
 ### 💳 Pricing Structure
 
 Our [pricing page](/pricing) demonstrates a complete pricing structure with:
+
 - Three-tier pricing model (Starter, Pro, Enterprise)
 - Feature comparison tables
 - Call-to-action buttons
@@ -117,17 +123,17 @@ The pricing structure is easily customizable and ready for payment integration:
 ```typescript
 // Example: Pricing configuration
 const plans = [
-  {
-    name: 'Starter',
-    price: 0,
-    features: ['Up to 3 projects', 'Basic analytics', 'Community support']
-  },
-  {
-    name: 'Pro', 
-    price: 19,
-    features: ['Unlimited projects', 'Advanced analytics', 'Priority support']
-  }
-  // ... more plans
+	{
+		name: 'Starter',
+		price: 0,
+		features: ['Up to 3 projects', 'Basic analytics', 'Community support']
+	},
+	{
+		name: 'Pro',
+		price: 19,
+		features: ['Unlimited projects', 'Advanced analytics', 'Priority support']
+	}
+	// ... more plans
 ];
 ```
 
@@ -140,17 +146,15 @@ The template comes with Supabase fully configured:
 import { supabase } from '$lib/supabaseClient';
 
 const channel = supabase
-  .channel('realtime-posts')
-  .on('postgres_changes', 
-    { event: '*', schema: 'public', table: 'posts' }, 
-    (payload) => {
-      console.log('Change received!', payload);
-    }
-  )
-  .subscribe();
+	.channel('realtime-posts')
+	.on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, (payload) => {
+		console.log('Change received!', payload);
+	})
+	.subscribe();
 ```
 
 Features include:
+
 - Row-level security (RLS) policies
 - Real-time subscriptions
 - File storage configuration
@@ -160,6 +164,7 @@ Features include:
 ### 📝 Blog System
 
 Our MDX-powered blog system supports:
+
 - Markdown with React components
 - Syntax highlighting
 - SEO optimization
@@ -167,8 +172,8 @@ Our MDX-powered blog system supports:
 - Featured posts
 
 ```markdown
-<!-- Example blog post frontmatter -->
----
+## <!-- Example blog post frontmatter -->
+
 title: "Your Blog Post"
 slug: "your-blog-post"
 excerpt: "A compelling description"
@@ -176,6 +181,7 @@ publishedAt: "2024-01-25"
 author: "Your Name"
 tags: ["saas", "tutorial"]
 featured: true
+
 ---
 ```
 
@@ -194,8 +200,9 @@ vercel --prod
 ### Environment Variables
 
 Set these in your production environment:
+
 - `PUBLIC_SUPABASE_URL`
-- `PUBLIC_SUPABASE_ANON_KEY` 
+- `PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 ### Database Setup
@@ -231,16 +238,16 @@ theme: {
 ```typescript
 // Add new features to pricing plans
 const plans = [
-  {
-    name: 'Enterprise Plus',
-    price: 199,
-    features: [
-      'Everything in Enterprise',
-      'White-label solution',
-      'Custom integrations',
-      'Dedicated support team'
-    ]
-  }
+	{
+		name: 'Enterprise Plus',
+		price: 199,
+		features: [
+			'Everything in Enterprise',
+			'White-label solution',
+			'Custom integrations',
+			'Dedicated support team'
+		]
+	}
 ];
 ```
 
@@ -249,14 +256,14 @@ const plans = [
 ```svelte
 <!-- src/routes/features/+page.svelte -->
 <script lang="ts">
-  import { Database, Zap, Shield } from 'lucide-svelte';
+	import { Database, Zap, Shield } from '@lucide/svelte';
 </script>
 
 <div class="container mx-auto py-20">
-  <h1 class="h1 text-center mb-12">
-    Powerful <span class="text-primary-500">Features</span>
-  </h1>
-  <!-- Your feature content -->
+	<h1 class="h1 mb-12 text-center">
+		Powerful <span class="text-primary-500">Features</span>
+	</h1>
+	<!-- Your feature content -->
 </div>
 ```
 
@@ -280,11 +287,11 @@ import { browser } from '$app/environment';
 import { page } from '$app/stores';
 
 if (browser) {
-  // Google Analytics 4
-  gtag('config', 'GA_TRACKING_ID', {
-    page_title: $page.route.id,
-    page_location: $page.url.href
-  });
+	// Google Analytics 4
+	gtag('config', 'GA_TRACKING_ID', {
+		page_title: $page.route.id,
+		page_location: $page.url.href
+	});
 }
 ```
 
@@ -328,6 +335,7 @@ npm run dev
 ```
 
 **What you get:**
+
 - ✅ Complete authentication system
 - ✅ Beautiful, responsive UI
 - ✅ Database integration
@@ -342,4 +350,4 @@ Don't spend months building the same features every SaaS needs. Start with our p
 
 ---
 
-*Built with ❤️ using SvelteKit, Supabase, and Skeleton UI. Join thousands of developers who trust our template to launch their SaaS projects.* 
+_Built with ❤️ using SvelteKit, Supabase, and Skeleton UI. Join thousands of developers who trust our template to launch their SaaS projects._

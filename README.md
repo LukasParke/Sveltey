@@ -7,7 +7,6 @@
 
 # 🚀 Sveltey - a SaaS Template built with SvelteKit
 
-
 ![Sveltey SaaS Template](https://github.com/user-attachments/assets/5dc91129-ebc7-4458-98b6-1862c6de4428)
 
 A modern, production-ready SaaS template built with [SvelteKit 2](https://kit.svelte.dev/), [Svelte 5](https://svelte.dev/), [Supabase](https://supabase.com/), and [Skeleton UI](https://skeleton.dev/). Get your SaaS project up and running in hours, not months.
@@ -18,7 +17,7 @@ A modern, production-ready SaaS template built with [SvelteKit 2](https://kit.sv
     - [🎨 Modern UI/UX](#-modern-uiux)
     - [📝 Content Management](#-content-management)
     - [📊 Dashboard \& Analytics - Planned](#-dashboard--analytics---planned)
-    - [💳 Payments \& Subscriptions - Planned](#-payments--subscriptions---planned)
+    - [💳 Payments \& Subscriptions](#-payments--subscriptions)
   - [🚀 Quick Start](#-quick-start)
   - [📦 Tech Stack](#-tech-stack)
   - [📁 Project Structure](#-project-structure)
@@ -61,39 +60,44 @@ A modern, production-ready SaaS template built with [SvelteKit 2](https://kit.sv
   - [🆘 Support](#-support)
   - [🙏 Acknowledgments](#-acknowledgments)
 
-
 ## ✨ Features
 
 ### 🔐 Authentication & User Management
-- **Supabase Auth Integration**: Complete authentication flow with email/password and OAuth providers
-- **Protected Routes**: Automatic route protection and session management
-- **User Profiles**: Customizable user profile management
-- **Password Reset**: Secure password reset functionality
+
+- **Supabase Auth Integration**: Email/password sign-up (with email confirmation) and OAuth providers via PKCE
+- **Protected Routes**: Server-side route protection and session management in `hooks.server.ts`
+- **User Profiles**: Profile page with display-name editing
+- **Password Reset**: Request-link flow with secure password update page
 
 ### 🎨 Modern UI/UX
+
 - **Skeleton UI**: Beautiful, accessible components out of the box
-- **Dark/Light Mode**: Built-in mode switching
+- **Dark/Light Mode**: Built-in mode switching without flash-of-wrong-theme
 - **Comprehensive Themes**: 22 beautiful handmade themes
 - **Responsive Design**: Mobile-first, responsive layouts
 - **Loading States**: Elegant loading indicators and transitions
 - **Toast Notifications**: User-friendly feedback system
 
 ### 📝 Content Management
+
 - **Blog System**: Built-in blog with markdown support
 - **SEO Optimized**: Meta tags, Open Graph, and structured data
+- **Contact Form**: Resend-powered contact form with validation, honeypot, and rate limiting
+
+### 💳 Payments & Subscriptions
+
+- **Native Stripe Integration**: Stripe Checkout subscriptions — no billing wrapper
+- **Subscription Plans**: Configurable pricing tiers in `src/lib/config/plans.ts`
+- **Billing Management**: Stripe Customer Portal for invoices, payment methods, and cancellation
+- **Webhook Handling**: Signature-verified webhook mirroring subscription state into Postgres (RLS-safe)
 
 ### 📊 Dashboard & Analytics - Planned
+
 - **Admin Dashboard**: Clean, intuitive admin interface
 - **User Analytics**: Basic user metrics and insights
 - **Real-time Updates**: Live data updates using Supabase real-time
 - **Data Visualization**: Charts and graphs for key metrics
 - **Privacy-First Analytics**: Built-in Plausible Analytics integration for GDPR-compliant tracking
-
-### 💳 Payments & Subscriptions - Planned
-- **Stripe Integration**: Ready-to-use payment processing
-- **Subscription Plans**: Flexible pricing tiers
-- **Billing Management**: Customer billing portal
-- **Webhook Handling**: Secure webhook processing
 
 ## 🚀 Quick Start
 
@@ -101,13 +105,9 @@ A modern, production-ready SaaS template built with [SvelteKit 2](https://kit.sv
 # Clone the repository
 git clone https://github.com/yourusername/sveltey.git
 cd sveltey
-
 # Install dependencies
 npm install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your Supabase and Stripe keys
+# Edit .env with your Supabase, Resend and Stripe keys
 
 # Start the development server
 npm run dev
@@ -124,33 +124,38 @@ Visit `http://localhost:5173` and start building your SaaS!
 - **Styling**: Tailwind CSS
 - **Analytics**: Plausible Analytics
 - **Email**: Resend
-<!-- - **Payments**: Stripe -->
 - **Deployment**: Vercel/Netlify ready
-- **Language**: TypeScript
+- **Payments**: Stripe (native Checkout + Customer Portal + webhooks)
 
 ## 📁 Project Structure
 
 ```
 src/
 ├── lib/
-│   ├── components/     # Reusable UI components
-│   ├── stores/         # Svelte stores for state management
-│   ├── utils/          # Utility functions
-│   └── types/          # TypeScript type definitions
+│   ├── auth/           # Auth helpers (error mapping, redirect guards)
+│   ├── components/     # Reusable UI components (incl. auth/AuthForm)
+│   ├── config/         # plans.ts — subscription plan definitions
+│   ├── server/         # Server-only modules (stripe, supabase-admin)
+│   ├── posts/          # Markdown blog posts
+│   ├── blog.ts         # Blog loaders
+│   └── supabase-client.ts # Browser Supabase client
 ├── routes/
-│   ├── (app)/          # App routes
-|   |   ├── api         # API routes, security is handled at the endpoint level
-|   |   ├── app         # App routes, security is handeled globally, all sub-routes are protected
-|   |   └── auth        # Auth routes, used for login, logout, and password reset functionality
+│   ├── api/            # API endpoints (auth handled per-endpoint)
+│   |   └── stripe/     # checkout, portal, webhook
+│   ├── (app)/          # Authenticated shell
+|   |   ├── app/        # Dashboard, profile, billing (guarded in hooks)
+|   |   └── auth/       # login, register, reset, update-password, callback, logout
 │   └── (marketing)/    # Public marketing pages
-|       ├── blog        # API routes, security is handled at the endpoint level
-|       ├── contact     # Contact page
-|       ├── pricing     # Pricing page
+|       ├── blog        # Blog listing + [slug]
+|       ├── contact     # Contact form (Resend)
+|       ├── pricing     # Plans with Stripe Checkout buttons
 |       ├── privacy     # Privacy policy page
 |       └── terms       # Terms of service page
-├── app.html            # App shell
+├── app.html            # App shell (theme bootstrap script)
 ├── app.css             # Global styles
-└── hooks.server.ts     # Server hooks
+└── hooks.server.ts     # Supabase session + route guards
+supabase/
+└── migrations/         # SQL migrations (subscriptions table + RLS)
 ```
 
 ## 🔧 Configuration
@@ -164,22 +169,28 @@ Create a `.env` file in the root directory:
 PUBLIC_SUPABASE_URL=your_supabase_url
 PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# Resend (for email)
-RESEND_API_KEY=your_resend_api_key
+# Supabase service role (server-only; required for Stripe webhooks)
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-# Stripe // coming soon
-PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+# Resend (contact form)
+RESEND_API_KEY=your_resend_api_key
+CONTACT_FROM_EMAIL="Sveltey Contact <onboarding@resend.dev>"
+CONTACT_TO_EMAIL=where@to.deliver
+
+# Stripe (see docs/PAYMENTS_SETUP.md)
 STRIPE_SECRET_KEY=your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=your_webhook_secret
-
+# Optional Stripe Price IDs (inline pricing used when unset)
+STRIPE_PRICE_PRO=
+STRIPE_PRICE_ENTERPRISE=
 ```
 
 ### Supabase Setup
 
 1. Create a new Supabase project
-2. Copy the project URL and anon key
-3. Run the included SQL migrations
-4. Set up your authentication providers
+2. Copy the project URL and anon key into `.env`
+3. Run the included SQL migration: `supabase/migrations/0001_subscriptions.sql` (SQL editor or `supabase db push`)
+4. Set up your authentication providers (see `docs/AUTHENTICATION_SETUP.md`)
 
 ### Email Setup (Resend)
 
@@ -194,46 +205,30 @@ Sveltey uses [Resend](https://resend.com/) for reliable email delivery with exce
 4. **Verify your domain** (optional but recommended for production):
    - Add your domain in the Resend dashboard
    - Configure DNS records as instructed
-   - This removes the "via resend.com" branding and improves deliverability
 
 #### Email Features
 
-- **Transactional Emails**: Password resets, welcome emails, notifications
-- **Template Support**: Beautiful HTML email templates
-- **Delivery Tracking**: Monitor email delivery and engagement
-- **High Deliverability**: Excellent inbox placement rates
-- **Simple API**: Easy integration with SvelteKit API routes
+- **Contact Form Delivery**: The `/contact` form sends through a server action with validation, a honeypot field, and per-IP rate limiting
+- **Graceful Dev Mode**: Without `RESEND_API_KEY`, submissions are logged to the server console and the UI says so — never a fake success
+- **Simple API**: Resend is imported statically in `src/routes/(marketing)/contact/+page.server.ts`
 
-#### Example Usage
+#### Example: the built-in contact action
+
+See `src/routes/(marketing)/contact/+page.server.ts` for the full implementation
+(validation, honeypot, rate limit, HTML escaping). The send call itself:
 
 ```typescript
-// src/routes/api/send-email/+server.ts
-import { RESEND_API_KEY } from '$env/static/private';
 import { Resend } from 'resend';
 
-const resend = new Resend(RESEND_API_KEY);
-
-export async function POST({ request }) {
-  const { to, subject, html } = await request.json();
-  
-  try {
-    const data = await resend.emails.send({
-      from: 'noreply@yourdomain.com',
-      to,
-      subject,
-      html
-    });
-    
-    return new Response(JSON.stringify({ success: true, data }), {
-      headers: { 'Content-Type': 'application/json' }
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-}
+const resend = new Resend(env.RESEND_API_KEY);
+await resend.emails.send({
+	from: env.CONTACT_FROM_EMAIL ?? 'Sveltey Contact <onboarding@resend.dev>',
+	to: env.CONTACT_TO_EMAIL,
+	replyTo: submissionEmail,
+	subject: `Contact form: ${subject}`,
+	text,
+	html
+});
 ```
 
 #### Email Template example
@@ -256,10 +251,13 @@ export const welcomeEmail = (userName: string) => `
 
 ### Stripe Setup
 
-1. Create a Stripe account
-2. Copy your API keys
-3. Configure your products and pricing
-4. Set up webhooks for subscription events
+Full walkthrough in **[docs/PAYMENTS_SETUP.md](docs/PAYMENTS_SETUP.md)**:
+
+1. Create a Stripe account and set `STRIPE_SECRET_KEY` (+ `SUPABASE_SERVICE_ROLE_KEY` for webhooks)
+2. Apply `supabase/migrations/0001_subscriptions.sql`
+3. Optionally create Products/Prices and set `STRIPE_PRICE_PRO` / `STRIPE_PRICE_ENTERPRISE`
+4. Forward webhooks (`checkout.session.completed`, `customer.subscription.*`) and set `STRIPE_WEBHOOK_SECRET`
+5. Activate the Customer Portal link in the Stripe dashboard
 
 ### Analytics Setup (Plausible)
 
@@ -296,8 +294,8 @@ Add custom event tracking for user actions:
 
 ```javascript
 // Track custom events
-plausible('signup', {props: {plan: 'premium'}});
-plausible('purchase', {props: {amount: 99}});
+plausible('signup', { props: { plan: 'premium' } });
+plausible('purchase', { props: { amount: 99 } });
 ```
 
 #### Alternative Analytics
@@ -311,12 +309,14 @@ To use a different analytics provider:
 ## 🎯 Customization
 
 ### Branding
+
 - Update `app.html` for favicon and meta tags
 - Modify `src/lib/config.ts` for app configuration
 - Customize colors in with a [custom Skeleton UI theme](https://www.skeleton.dev/docs/design/themes#custom-themes)
 - Replace logo
 
 ### Components
+
 - All components are in `src/lib/components/`
 - Skeleton UI provides the base component library
 - Easy to theme and customize with CSS variables
@@ -338,40 +338,40 @@ The base meta tags are defined in `src/routes/+layout.ts` and include:
 
 ```typescript
 const baseMetaTags = Object.freeze({
-  title: 'Sveltey - SvelteKit SaaS Template',
-  titleTemplate: '%s | Sveltey',
-  description: 'Your default site description...',
-  canonical: new URL(url.pathname, url.origin).href,
-  robots: 'index,follow',
-  keywords: ['SvelteKit', 'SaaS', 'template'],
-  
-  openGraph: {
-    type: 'website',
-    url: new URL(url.pathname, url.origin).href,
-    title: 'Sveltey - SvelteKit SaaS Template',
-    description: 'Your OpenGraph description...',
-    siteName: 'Sveltey',
-    locale: 'en_US',
-    images: [
-      {
-        url: `${url.origin}/og-image.jpg`,
-        width: 1200,
-        height: 630,
-        alt: 'Sveltey - SvelteKit SaaS Template',
-        type: 'image/jpeg'
-      }
-    ]
-  },
-  
-  twitter: {
-    cardType: 'summary_large_image',
-    site: '@sveltey_dev',
-    creator: '@sveltey_dev',
-    title: 'Sveltey - SvelteKit SaaS Template',
-    description: 'Your Twitter description...',
-    image: `${url.origin}/og-image.jpg`,
-    imageAlt: 'Sveltey - SvelteKit SaaS Template'
-  }
+	title: 'Sveltey - SvelteKit SaaS Template',
+	titleTemplate: '%s | Sveltey',
+	description: 'Your default site description...',
+	canonical: new URL(url.pathname, url.origin).href,
+	robots: 'index,follow',
+	keywords: ['SvelteKit', 'SaaS', 'template'],
+
+	openGraph: {
+		type: 'website',
+		url: new URL(url.pathname, url.origin).href,
+		title: 'Sveltey - SvelteKit SaaS Template',
+		description: 'Your OpenGraph description...',
+		siteName: 'Sveltey',
+		locale: 'en_US',
+		images: [
+			{
+				url: `${url.origin}/og-image.jpg`,
+				width: 1200,
+				height: 630,
+				alt: 'Sveltey - SvelteKit SaaS Template',
+				type: 'image/jpeg'
+			}
+		]
+	},
+
+	twitter: {
+		cardType: 'summary_large_image',
+		site: '@sveltey_dev',
+		creator: '@sveltey_dev',
+		title: 'Sveltey - SvelteKit SaaS Template',
+		description: 'Your Twitter description...',
+		image: `${url.origin}/og-image.jpg`,
+		imageAlt: 'Sveltey - SvelteKit SaaS Template'
+	}
 }) satisfies MetaTagsProps;
 ```
 
@@ -384,46 +384,46 @@ Each page can override and extend the base meta tags by exporting a `load` funct
 import type { MetaTagsProps } from 'svelte-meta-tags';
 
 export const load = () => {
-  const pageMetaTags = Object.freeze({
-    title: 'Your Page Title',
-    description: 'Specific description for this page',
-    keywords: ['additional', 'keywords', 'for', 'this', 'page'],
-    
-    openGraph: {
-      title: 'Your Page Title - Brand Name',
-      description: 'OpenGraph description for social sharing',
-      type: 'article', // or 'website', 'product', etc.
-      images: [
-        {
-          url: 'https://your-domain.com/specific-og-image.jpg',
-          width: 1200,
-          height: 630,
-          alt: 'Description of your image'
-        }
-      ]
-    },
-    
-    twitter: {
-      title: 'Twitter-specific title',
-      description: 'Twitter-specific description'
-    },
-    
-    // Additional meta tags
-    additionalMetaTags: [
-      {
-        name: 'author',
-        content: 'Your Name'
-      },
-      {
-        property: 'article:published_time',
-        content: '2024-01-01T00:00:00Z'
-      }
-    ]
-  }) satisfies MetaTagsProps;
+	const pageMetaTags = Object.freeze({
+		title: 'Your Page Title',
+		description: 'Specific description for this page',
+		keywords: ['additional', 'keywords', 'for', 'this', 'page'],
 
-  return {
-    pageMetaTags
-  };
+		openGraph: {
+			title: 'Your Page Title - Brand Name',
+			description: 'OpenGraph description for social sharing',
+			type: 'article', // or 'website', 'product', etc.
+			images: [
+				{
+					url: 'https://your-domain.com/specific-og-image.jpg',
+					width: 1200,
+					height: 630,
+					alt: 'Description of your image'
+				}
+			]
+		},
+
+		twitter: {
+			title: 'Twitter-specific title',
+			description: 'Twitter-specific description'
+		},
+
+		// Additional meta tags
+		additionalMetaTags: [
+			{
+				name: 'author',
+				content: 'Your Name'
+			},
+			{
+				property: 'article:published_time',
+				content: '2024-01-01T00:00:00Z'
+			}
+		]
+	}) satisfies MetaTagsProps;
+
+	return {
+		pageMetaTags
+	};
 };
 ```
 
@@ -434,36 +434,38 @@ For dynamic pages (like blog posts), you can generate meta tags based on content
 ```typescript
 // src/routes/blog/[slug]/+page.server.ts
 export const load = async ({ params, url }) => {
-  const post = await getPostBySlug(params.slug);
-  
-  const pageMetaTags = Object.freeze({
-    title: post.title,
-    description: post.excerpt,
-    canonical: new URL(`/blog/${params.slug}`, url.origin).href,
-    
-    openGraph: {
-      type: 'article',
-      title: post.title,
-      description: post.excerpt,
-      url: new URL(`/blog/${params.slug}`, url.origin).href,
-      images: post.featuredImage ? [
-        {
-          url: post.featuredImage,
-          width: 1200,
-          height: 630,
-          alt: post.title
-        }
-      ] : undefined,
-      article: {
-        publishedTime: post.publishedAt,
-        authors: [post.author],
-        section: 'Technology',
-        tags: post.tags
-      }
-    }
-  }) satisfies MetaTagsProps;
-  
-  return { post, pageMetaTags };
+	const post = await getPostBySlug(params.slug);
+
+	const pageMetaTags = Object.freeze({
+		title: post.title,
+		description: post.excerpt,
+		canonical: new URL(`/blog/${params.slug}`, url.origin).href,
+
+		openGraph: {
+			type: 'article',
+			title: post.title,
+			description: post.excerpt,
+			url: new URL(`/blog/${params.slug}`, url.origin).href,
+			images: post.featuredImage
+				? [
+						{
+							url: post.featuredImage,
+							width: 1200,
+							height: 630,
+							alt: post.title
+						}
+					]
+				: undefined,
+			article: {
+				publishedTime: post.publishedAt,
+				authors: [post.author],
+				section: 'Technology',
+				tags: post.tags
+			}
+		}
+	}) satisfies MetaTagsProps;
+
+	return { post, pageMetaTags };
 };
 ```
 
@@ -473,11 +475,11 @@ Control search engine indexing per page:
 
 ```typescript
 const pageMetaTags = {
-  robots: 'noindex,nofollow', // Don't index this page
-  // or
-  robots: 'index,follow', // Index this page (default)
-  // or
-  robots: 'index,nofollow' // Index but don't follow links
+	robots: 'noindex,nofollow', // Don't index this page
+	// or
+	robots: 'index,follow', // Index this page (default)
+	// or
+	robots: 'index,nofollow' // Index but don't follow links
 };
 ```
 
@@ -503,15 +505,15 @@ The default image is automatically referenced in your base meta tags:
 ```typescript
 // src/routes/+layout.ts
 openGraph: {
-  images: [
-    {
-      url: `${url.origin}/og-image.jpg`,
-      width: 1200,
-      height: 630,
-      alt: 'Sveltey - SvelteKit SaaS Template',
-      type: 'image/jpeg'
-    }
-  ]
+	images: [
+		{
+			url: `${url.origin}/og-image.jpg`,
+			width: 1200,
+			height: 630,
+			alt: 'Sveltey - SvelteKit SaaS Template',
+			type: 'image/jpeg'
+		}
+	];
 }
 ```
 
@@ -522,17 +524,17 @@ Override the default image for specific pages:
 ```typescript
 // src/routes/pricing/+page.ts
 const pageMetaTags = {
-  openGraph: {
-    images: [
-      {
-        url: `${url.origin}/og-pricing.jpg`,
-        width: 1200,
-        height: 630,
-        alt: 'Sveltey Pricing Plans',
-        type: 'image/jpeg'
-      }
-    ]
-  }
+	openGraph: {
+		images: [
+			{
+				url: `${url.origin}/og-pricing.jpg`,
+				width: 1200,
+				height: 630,
+				alt: 'Sveltey Pricing Plans',
+				type: 'image/jpeg'
+			}
+		]
+	}
 };
 ```
 
@@ -543,25 +545,27 @@ For blog posts or dynamic content, you can generate or specify images dynamicall
 ```typescript
 // src/routes/blog/[slug]/+page.server.ts
 const pageMetaTags = {
-  openGraph: {
-    images: post.featuredImage ? [
-      {
-        url: post.featuredImage,
-        width: 1200,
-        height: 630,
-        alt: post.title,
-        type: 'image/jpeg'
-      }
-    ] : [
-      {
-        url: `${url.origin}/og-blog-default.jpg`,
-        width: 1200,
-        height: 630,
-        alt: 'Sveltey Blog',
-        type: 'image/jpeg'
-      }
-    ]
-  }
+	openGraph: {
+		images: post.featuredImage
+			? [
+					{
+						url: post.featuredImage,
+						width: 1200,
+						height: 630,
+						alt: post.title,
+						type: 'image/jpeg'
+					}
+				]
+			: [
+					{
+						url: `${url.origin}/og-blog-default.jpg`,
+						width: 1200,
+						height: 630,
+						alt: 'Sveltey Blog',
+						type: 'image/jpeg'
+					}
+				]
+	}
 };
 ```
 
@@ -579,22 +583,22 @@ const pageMetaTags = {
 ```typescript
 // Example with multiple image variants
 openGraph: {
-  images: [
-    {
-      url: `${url.origin}/og-image-large.jpg`,
-      width: 1200,
-      height: 630,
-      alt: 'Large image for Facebook, LinkedIn',
-      type: 'image/jpeg'
-    },
-    {
-      url: `${url.origin}/og-image-square.jpg`,
-      width: 1080,
-      height: 1080,
-      alt: 'Square image for Instagram, Twitter',
-      type: 'image/jpeg'
-    }
-  ]
+	images: [
+		{
+			url: `${url.origin}/og-image-large.jpg`,
+			width: 1200,
+			height: 630,
+			alt: 'Large image for Facebook, LinkedIn',
+			type: 'image/jpeg'
+		},
+		{
+			url: `${url.origin}/og-image-square.jpg`,
+			width: 1080,
+			height: 1080,
+			alt: 'Square image for Instagram, Twitter',
+			type: 'image/jpeg'
+		}
+	];
 }
 ```
 
@@ -605,21 +609,21 @@ For advanced use cases, you can generate images dynamically:
 ```typescript
 // src/routes/api/og/[slug]/+server.ts
 export async function GET({ params, url }) {
-  const post = await getPostBySlug(params.slug);
-  
-  // Generate image using libraries like @vercel/og or canvas
-  const image = await generateOGImage({
-    title: post.title,
-    author: post.author,
-    template: 'blog-post'
-  });
-  
-  return new Response(image, {
-    headers: {
-      'Content-Type': 'image/png',
-      'Cache-Control': 'public, max-age=31536000, immutable'
-    }
-  });
+	const post = await getPostBySlug(params.slug);
+
+	// Generate image using libraries like @vercel/og or canvas
+	const image = await generateOGImage({
+		title: post.title,
+		author: post.author,
+		template: 'blog-post'
+	});
+
+	return new Response(image, {
+		headers: {
+			'Content-Type': 'image/png',
+			'Cache-Control': 'public, max-age=31536000, immutable'
+		}
+	});
 }
 ```
 
@@ -627,15 +631,15 @@ Then reference it in your meta tags:
 
 ```typescript
 openGraph: {
-  images: [
-    {
-      url: `${url.origin}/api/og/${params.slug}`,
-      width: 1200,
-      height: 630,
-      alt: post.title,
-      type: 'image/png'
-    }
-  ]
+	images: [
+		{
+			url: `${url.origin}/api/og/${params.slug}`,
+			width: 1200,
+			height: 630,
+			alt: post.title,
+			type: 'image/png'
+		}
+	];
 }
 ```
 
@@ -657,7 +661,7 @@ openGraph: {
   url: 'https://example.com', // Canonical URL
   siteName: 'Site Name',     // Your site/brand name
   locale: 'en_US',           // Language and region
-  
+
   // For articles
   article: {
     publishedTime: '2024-01-01T00:00:00Z',
@@ -666,7 +670,7 @@ openGraph: {
     section: 'Technology',
     tags: ['svelte', 'sveltekit']
   },
-  
+
   // For products
   product: {
     price: {
@@ -705,4 +709,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-*Ready to launch your SaaS? Get started with Sveltey today!*
+_Ready to launch your SaaS? Get started with Sveltey today!_

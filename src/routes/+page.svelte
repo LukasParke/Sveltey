@@ -176,7 +176,7 @@
 		</div>
 		{#if !data.session}
 			<a
-				href="/auth/signup"
+				href="/auth/register"
 				class="btn md:btn-lg preset-filled-primary-500"
 				aria-label="Start building your SaaS today"
 			>
