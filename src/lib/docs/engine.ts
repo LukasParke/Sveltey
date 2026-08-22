@@ -42,8 +42,8 @@ export function slugifyHeading(text: string): string {
 	return text
 		.trim()
 		.toLowerCase()
-		.replace(/[`*_~[\]()]/g, '')
-		.replace(/[^\p{L}\p{N}\s-]/gu, '')
+		.replace(/[`*~[\]()]/g, '')
+		.replace(/[^\p{L}\p{N}_\s-]/gu, '')
 		.replace(/\s+/g, '-');
 }
 

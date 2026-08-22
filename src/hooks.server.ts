@@ -65,28 +65,48 @@ const supabase: Handle = async ({ event, resolve }) => {
 	});
 };
 
+/**
+ * Route-rule evaluation, pure so it stays unit-testable without Kit's
+ * request-scoped internals.
+ */
+export function evaluateRouteRules(
+	pathname: string,
+	session: unknown
+): 'allow' | 'login' | 'dashboard' {
+	if (!session && pathname.startsWith('/app')) {
+		return 'login';
+	}
+
+	/**
+	 * Flows that legitimately require (or just established) a session are
+	 * exempt from the signed-in bounce:
+	 * - /auth/logout: POST action signs the user out
+	 * - /auth/callback: exchanges PKCE/OAuth codes for a session
+	 * - /auth/update-password: password recovery requires the callback session
+	 */
+	const authExempt = ['/auth/logout', '/auth/callback', '/auth/update-password'];
+	if (
+		session &&
+		(pathname === '/auth' || pathname.startsWith('/auth/')) &&
+		!authExempt.some((p) => pathname.startsWith(p))
+	) {
+		return 'dashboard';
+	}
+
+	return 'allow';
+}
+
 const authGuard: Handle = async ({ event, resolve }) => {
 	const { session, user } = await event.locals.safeGetSession();
 
 	event.locals.session = session;
 	event.locals.user = user;
 
-	const { pathname } = event.url;
-
-	// Protect routes that require authentication
-	if (!session && pathname.startsWith('/app')) {
+	const verdict = evaluateRouteRules(event.url.pathname, session);
+	if (verdict === 'login') {
 		redirect(303, '/auth/login');
 	}
-
-	/**
-	 * Redirect authenticated users away from auth pages. Flows that legitimately
-	 * require (or just established) a session are exempt:
-	 * - /auth/logout: POST action signs the user out
-	 * - /auth/callback: exchanges PKCE/OAuth codes for a session
-	 * - /auth/update-password: password recovery requires the session created by the callback
-	 */
-	const authExempt = ['/auth/logout', '/auth/callback', '/auth/update-password'];
-	if (session && pathname.startsWith('/auth') && !authExempt.some((p) => pathname.startsWith(p))) {
+	if (verdict === 'dashboard') {
 		redirect(303, '/app/dashboard');
 	}
 
